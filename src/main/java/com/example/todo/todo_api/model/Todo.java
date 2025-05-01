@@ -5,17 +5,17 @@ import java.util.UUID;
 public class Todo {
 	private UUID id;
 	private String title;
-	private String descripton;
+	private String description;
 	private boolean completed;
 	
 	public Todo() {
 		this.id=UUID.randomUUID();
 	}
 
-	public Todo(String title, String descripton) {
+	public Todo(String title, String description) {
 		this();
 		this.title = title;
-		this.descripton = descripton;
+		this.description = description;
 		this.completed = false;
 	}
 
@@ -35,12 +35,12 @@ public class Todo {
 		this.title = title;
 	}
 
-	public String getDescripton() {
-		return descripton;
+	public String getdescription() {
+		return description;
 	}
 
-	public void setDescripton(String descripton) {
-		this.descripton = descripton;
+	public void setdescription(String description) {
+		this.description = description;
 	}
 
 	public boolean isCompleted() {
