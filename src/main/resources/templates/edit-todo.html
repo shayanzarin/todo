@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit To-Do</title>
+</head>
+<body>
+    <h1>Edit To-Do</h1>
+    <form th:action="@{/todos/update/{id}(id=${todo.id})}" th:object="${todo}" method="post">
+        <input type="hidden" name="_method" value="put" />
+        <input type="hidden" th:field="*{id}" />
+        <div>
+            <label for="title">Title:</label>
+            <input type="text" id="title" th:field="*{title}" required/>
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" th:field="*{description}"></textarea>
+        </div>
+        <div>
+            <input type="checkbox" id="completed" th:field="*{completed}" />
+            <label for="completed">Completed</label>
+        </div>
+        <button type="submit">Update To-Do</button>
+    </form>
+    <p><a th:href="@{/todos}">Back to List</a></p>
+</body>
+</html>
