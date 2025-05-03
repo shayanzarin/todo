@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>To-Do List</title>
+</head>
+<body>
+    <h1>To-Do List</h1>
+
+    <div sec:authorize="isAuthenticated()">
+        <p>Welcome, <span sec:authentication="name"></span>!</p>
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Logout"/>
+        </form>
+        <a th:href="@{/todos/new}">Add New To-Do</a>
+    </div>
+    <div sec:authorize="!isAuthenticated()">
+        <p>Please <a th:href="@{/login}">login</a> to see your to-dos.</p>
+    </div>
+
+    <table th:if="${not #lists.isEmpty(todos)}">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Completed</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="todo : ${todos}">
+                <td th:text="${todo.title}"></td>
+                <td th:text="${todo.description}"></td>
+                <td th:text="${todo.completed ? 'Yes' : 'No'}"></td>
+                <td>
+                    <a th:href="@{/todos/edit/{id}(id=${todo.id})}">Edit</a> |
+                    <form th:action="@{/todos/delete/{id}(id=${todo.id})}" method="post" style="display: inline;">
+                        <input type="hidden" name="_method" value="delete" />
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p th:if="${#lists.isEmpty(todos)}" sec:authorize="isAuthenticated()">No to-dos yet. Click "Add New To-Do" to get started!</p>
+</body>
+</html>
