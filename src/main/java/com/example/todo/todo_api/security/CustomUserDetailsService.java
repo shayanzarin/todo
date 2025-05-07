@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import com.example.todo.todo_api.repository.UserRepository;
 
+@Service
 public class CustomUserDetailsService implements UserDetailsService{
 	
 	private final UserRepository userRepository;
