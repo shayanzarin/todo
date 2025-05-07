@@ -15,63 +15,75 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.todo.todo_api.model.Todo;
 import com.example.todo.todo_api.service.TodoService;
 import com.example.todo.todo_api.service.TodoServiceImpl;
 
-@RestController
-@RequestMapping("/api/todos")
-public class TodoController {
-	
-	private final TodoService todoService;
-	
-	@Autowired
-	public TodoController(TodoService todoService) {
-		super();
-		this.todoService = todoService;
-	}
-	
-	@GetMapping
-	public ResponseEntity<List<Todo>> getAllTodos(){
-		List<Todo> todos = todoService.getAllTodos();
-		return new ResponseEntity<>(todos, HttpStatus.OK);
-	}
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<Todo> getTodoById(@PathVariable UUID id){
-		Todo todo = todoService.getTodoByID(id);
-		
-		if(todo != null) {
-			return new ResponseEntity<>(todo, HttpStatus.OK);
-		}else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-	
-	@PostMapping
-	public ResponseEntity<Todo> creatTodo(@RequestBody Todo todo){
-		Todo createdTodo = todoService.creatTodo(todo);
-		return new ResponseEntity<>(createdTodo, HttpStatus.CREATED);
-	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<Todo> updateTodo(@PathVariable UUID id, @RequestBody Todo todo){
-		Todo todo1 = todoService.updateTodo(id, todo);
-		if (todo1 != null) {
-			return new ResponseEntity<>(todo1, HttpStatus.OK);
-		}else {
-			return new ResponseEntity<Todo>(HttpStatus.NOT_FOUND);
-		}
-	}
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteTodo(@PathVariable UUID id ){
-		todoService.deleteTodo(id);
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	}
 
-	
+@Controller
+@RequestMapping("/todos")
+public class TodoController {
+
+
+    private final TodoService todoService;
+
+    @Autowired
+    public TodoController(TodoService todoService) {
+        this.todoService = todoService;
+    }
+
+    @GetMapping
+    public String listTodos(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        List<Todo> todos = todoService.findByUser(username); 
+        model.addAttribute("todos", todos);
+        model.addAttribute("username", username);
+        return "todo-list";
+    }
+
+    @GetMapping("/new")
+    public String showAddTodoForm(Model model) {
+        model.addAttribute("todo", new Todo());
+        return "add-todo";
+    }
+
+    @PostMapping("/save")
+    public String saveTodo(@ModelAttribute("todo") Todo todo) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        todoService.creatTodoForUser(todo, username); 
+        return "redirect:/todos";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditTodoForm(@PathVariable("id") UUID id, Model model) {
+        Todo todo = todoService.getTodoByID(id);
+        if (todo != null) {
+            model.addAttribute("todo", todo);
+            return "edit-todo";
+        }
+        return "redirect:/todos";
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateTodo(@PathVariable("id") UUID id, @ModelAttribute("todo") Todo updatedTodo) {
+        todoService.updateTodo(id, updatedTodo);
+        return "redirect:/todos";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteTodo(@PathVariable("id") UUID id) {
+        todoService.deleteTodo(id);
+        return "redirect:/todos";
+    }
 
 	
 		
