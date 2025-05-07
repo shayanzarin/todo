@@ -12,5 +12,7 @@ import com.example.todo.todo_api.model.User;
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, UUID> {
     List<Todo> findByUser(User user);
+//    List<Todo> findByUsername(String username);
+
 
 }
