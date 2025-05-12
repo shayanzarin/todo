@@ -20,6 +20,6 @@ This is a simple Todo application built using Spring Boot and Java. It allows us
 * Spring Security
 * Thymeleaf (for the frontend)
 * JPA/Hibernate (for database interaction)
-* MySQL (or PostgreSQL, depending on your final setup)
-* Maven (or Gradle, depending on your project)
+* MySQL 
+* Maven 
 * OAuth 2.0 (for Google Login)
