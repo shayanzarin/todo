@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.example.todo.todo_api.security.CustomOidcUserService;
 import com.example.todo.todo_api.security.CustomUserDetailsService;
 
 @Configuration
@@ -17,10 +18,13 @@ import com.example.todo.todo_api.security.CustomUserDetailsService;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final CustomOidcUserService customOidcUserService;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, CustomOidcUserService customOidcUserService) {
         this.userDetailsService = userDetailsService;
+        this.customOidcUserService = customOidcUserService;
+        System.out.println("SecurityConfig: CustomOidcUserService injected: " + (customOidcUserService != null));
     }
 
     @Bean
@@ -39,18 +43,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/todos/new", "/todos/save").authenticated()
-                        .requestMatchers("/todos/edit/**", "/todos/update/**", "/todos/delete/**").authenticated()
-                        .anyRequest().permitAll() 
-                )
-                .formLogin((form) -> form
-                        .loginPage("/login") 
-                        .permitAll()
-                        .failureUrl("/login?error")
-                        .defaultSuccessUrl("/todos", true)
-                )
-                .logout((logout) -> logout.permitAll());
+            .authorizeHttpRequests((requests) -> requests
+                .requestMatchers("/todos/new", "/todos/save").authenticated()
+                .requestMatchers("/todos/edit/**", "/todos/update/**", "/todos/delete/**").authenticated()
+                .anyRequest().permitAll()
+            )
+            .formLogin((form) -> form
+                .loginPage("/login")
+                .permitAll()
+                .failureUrl("/login?error")
+                .defaultSuccessUrl("/todos", true)
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo.oidcUserService(customOidcUserService))
+                .defaultSuccessUrl("/todos", true)
+                .failureUrl("/login?error"))
+            .logout((logout) -> logout.permitAll());
 
         return http.build();
     }

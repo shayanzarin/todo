@@ -25,6 +25,9 @@ public class User {
 	private Long id;
 	private String username;
 	private String password;
+	private String email;
+	private String googleId;
+	
 	
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
@@ -37,10 +40,12 @@ public class User {
     public User() {
     }
 
-    public User(String username, String password, Set<String> roles) {
+    public User(String username, String password, Set<String> roles, String email, String googleId ) {
         this.username = username;
         this.password = password;
         this.roles = roles;
+        this.email = email;
+        this.googleId = googleId;
     }
 
 	public String getUsername() {
@@ -81,6 +86,22 @@ public class User {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getGoogleId() {
+		return googleId;
+	}
+
+	public void setGoogleId(String googleId) {
+		this.googleId = googleId;
 	}
     
     
