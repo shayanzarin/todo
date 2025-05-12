@@ -18,19 +18,11 @@ public class CustomOidcUserService extends OidcUserService {
     @Autowired
     private UserRepository userRepository;
 
-    @PostConstruct
-    public void init() {
-        System.out.println("CustomOidcUserService bean initialized");
-    }
-
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) {
-        System.out.println("CustomOidcUserService.loadUser() called");
         OidcUser oidcUser = super.loadUser(userRequest);
 
-        System.out.println("OIDC User Name: " + oidcUser.getName());
-        System.out.println("OIDC User Authorities: " + oidcUser.getAuthorities());
-        System.out.println("OIDC User Claims:");
+  
         oidcUser.getClaims().forEach((key, value) -> System.out.println(key + " = " + value));
 
         String email = oidcUser.getEmail();
